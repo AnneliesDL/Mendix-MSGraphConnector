@@ -48,6 +48,26 @@ public class MSGraphCallback {
      */
     protected void processCallbackRequest(IMxRuntimeRequest request, IMxRuntimeResponse response) throws Exception {
         HttpServletRequest servletRequest =  request.getHttpServletRequest();
+        HttpServletResponse servletResponse = response.getHttpServletResponse();
+        Core.getLogger("MSGraph").trace("Received process request event");
+        try {
+            Core.getLogger("MSGraph").debug("Request URI: "+ servletRequest.getRequestURI());
+            doCallbackService(request, response);
+        } catch (Exception ex) {
+        	//Added to catch http error 500
+        	try {
+        		String url = "http://localhost:8080/index.html";
+        		servletResponse.sendRedirect(url);
+            	} catch (Exception e) {  
+            	 	System.out.print(e);
+            	 	Core.getLogger("MSGraph").error("Exception occurred while processing request "+ex);
+                 	response.sendError("Exception occurred while processing request");
+            	}
+        }
+    }		
+	
+    /**protected void processCallbackRequest(IMxRuntimeRequest request, IMxRuntimeResponse response) throws Exception {
+        HttpServletRequest servletRequest =  request.getHttpServletRequest();
         Core.getLogger("MSGraph").trace("Received process request event");
         try {
             Core.getLogger("MSGraph").debug("Request URI: "+ servletRequest.getRequestURI());
@@ -56,7 +76,7 @@ public class MSGraphCallback {
             Core.getLogger("MSGraph").error("Exception occurred while processing request "+ex);
             response.sendError("Exception occurred while processing request");
         }
-    }
+    }*/
 
     /**
      * This method will process the incoming request
